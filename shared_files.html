@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Shared With Me - Secure File Sharing{% endblock %}
+
+{% block content %}
+<div class="shared-files-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">
+                <i class="fa-solid fa-share-nodes"></i>
+                Shared With Me
+            </h1>
+            {% if shared_files is defined %}
+                <p class="page-subtitle">
+                    {{ shared_files|length }} file{{ 's' if shared_files|length != 1 else '' }} shared with you
+                </p>
+            {% endif %}
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+                <i class="fa-solid fa-arrow-left"></i>
+                Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    <i class="fa-solid {% if category == 'success' %}fa-circle-check{% elif category == 'error' %}fa-circle-xmark{% elif category == 'warning' %}fa-triangle-exclamation{% else %}fa-circle-info{% endif %}"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if shared_files %}
+        <!-- Shared Files List -->
+        <div class="shared-files-list">
+            {% for share in shared_files %}
+                <div class="shared-file-card">
+                    <div class="shared-file-icon {{ share.file.file_type|default('')|lower }}">
+                        <i class="{{ get_file_icon(share.file.file_type) }}"></i>
+                    </div>
+
+                    <div class="shared-file-info">
+                        <h4 class="shared-file-name">
+                            <a href="{{ url_for('file_details', file_id=share.file.id) }}">
+                                {{ share.file.original_filename }}
+                            </a>
+                        </h4>
+                        <div class="shared-file-meta">
+                            <span class="meta-item">
+                                <i class="fa-solid fa-user"></i>
+                                Shared by <strong>{{ share.sharer.username }}</strong>
+                            </span>
+                            <span class="meta-separator">&bull;</span>
+                            <span class="meta-item">
+                                <i class="fa-regular fa-calendar"></i>
+                                {{ share.shared_at.strftime('%b %d, %Y') }}
+                            </span>
+                            <span class="meta-separator">&bull;</span>
+                            <span class="meta-item">
+                                <i class="fa-solid fa-weight-hanging"></i>
+                                {{ format_file_size(share.file.file_size) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="shared-file-permissions">
+                        {% if share.can_view %}
+                            <span class="permission-badge badge-view" title="Can View">
+                                <i class="fa-solid fa-eye"></i> View
+                            </span>
+                        {% endif %}
+                        {% if share.can_download %}
+                            <span class="permission-badge badge-download" title="Can Download">
+                                <i class="fa-solid fa-download"></i> Download
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="shared-file-actions">
+                        <a href="{{ url_for('file_details', file_id=share.file.id) }}" class="btn btn-sm btn-outline" title="View Details">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </a>
+                        {% if share.can_download %}
+                            <a href="{{ url_for('download_file', file_id=share.file.id) }}" class="btn btn-sm btn-primary" title="Download">
+                                <i class="fa-solid fa-download"></i>
+                            </a>
+                        {% else %}
+                            <button class="btn btn-sm btn-outline" disabled title="Download not permitted">
+                                <i class="fa-solid fa-download"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state-large">
+            <div class="empty-illustration">
+                <i class="fa-solid fa-share-nodes"></i>
+                <div class="empty-glow"></div>
+            </div>
+            <h3 class="empty-title">No shared files</h3>
+            <p class="empty-description">
+                Nobody has shared any files with you yet. When other users share files with you,
+                they will appear here with your granted permissions.
+            </p>
+            <div class="empty-actions">
+                <a href="{{ url_for('my_files') }}" class="btn btn-primary">
+                    <i class="fa-solid fa-folder-open"></i>
+                    Browse My Files
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

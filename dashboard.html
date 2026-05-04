@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Secure File Sharing{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Welcome Header -->
+    <div class="dashboard-header">
+        <div class="welcome-section">
+            <h1 class="welcome-title">
+                <i class="fa-solid fa-shield-halved"></i>
+                Welcome back, {{ current_user.username }}
+            </h1>
+            <p class="welcome-subtitle">Your secure file sharing dashboard</p>
+        </div>
+        <div class="role-badge-wrapper">
+            <span class="role-badge {% if current_user.role == 'admin' %}role-admin{% else %}role-user{% endif %}">
+                <i class="fa-solid {% if current_user.role == 'admin' %}fa-user-shield{% else %}fa-user-lock{% endif %}"></i>
+                {{ current_user.role|capitalize }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    <i class="fa-solid {% if category == 'success' %}fa-circle-check{% elif category == 'error' %}fa-circle-xmark{% elif category == 'warning' %}fa-triangle-exclamation{% else %}fa-circle-info{% endif %}"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <!-- My Files -->
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-primary">
+                <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <div class="stat-info">
+                <h3 class="stat-value">{{ my_files_count|default(0) }}</h3>
+                <p class="stat-label">My Files</p>
+            </div>
+            <div class="stat-footer">
+                <a href="{{ url_for('my_files') }}" class="stat-link">
+                    View All <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Shared With Me -->
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-success">
+                <i class="fa-solid fa-share-nodes"></i>
+            </div>
+            <div class="stat-info">
+                <h3 class="stat-value">{{ shared_count|default(0) }}</h3>
+                <p class="stat-label">Shared With Me</p>
+            </div>
+            <div class="stat-footer">
+                <a href="{{ url_for('shared_files') }}" class="stat-link">
+                    View All <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-warning">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <div class="stat-info">
+                <h3 class="stat-value">{{ recent_logs|length|default(0) }}</h3>
+                <p class="stat-label">Recent Activity</p>
+            </div>
+            <div class="stat-footer">
+                <span class="stat-muted">Last 7 days</span>
+            </div>
+        </div>
+
+        <!-- Total Storage -->
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-info">
+                <i class="fa-solid fa-hard-drive"></i>
+            </div>
+            <div class="stat-info">
+                <h3 class="stat-value">{{ format_file_size(total_storage|default(0)) }}</h3>
+                <p class="stat-label">Total Storage</p>
+            </div>
+            <div class="stat-footer">
+                <span class="stat-muted">Used</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="dashboard-grid">
+        <!-- Recent Uploads -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    Recent Uploads
+                </h2>
+                <a href="{{ url_for('my_files') }}" class="card-action">
+                    View All <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_files %}
+                    <div class="file-list">
+                        {% for file in recent_files %}
+                            <div class="file-item">
+                                <div class="file-icon {{ file.file_type|default('')|lower }}">
+                                    <i class="{{ get_file_icon(file.file_type) }}"></i>
+                                </div>
+                                <div class="file-info">
+                                    <h4 class="file-name">{{ file.original_filename }}</h4>
+                                    <p class="file-meta">
+                                        {{ format_file_size(file.file_size) }} &bull;
+                                        {{ file.uploaded_at.strftime('%Y-%m-%d %H:%M') }}
+                                    </p>
+                                </div>
+                                <a href="{{ url_for('download_file', file_id=file.id) }}" class="btn btn-sm btn-primary" title="Download">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fa-solid fa-folder-open empty-icon"></i>
+                        <p class="empty-text">No files yet</p>
+                        <a href="{{ url_for('upload_file') }}" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-plus"></i> Upload Your First File
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recently Shared With Me -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fa-solid fa-handshake-angle"></i>
+                    Recently Shared With Me
+                </h2>
+                <a href="{{ url_for('shared_files') }}" class="card-action">
+                    View All <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_shared %}
+                    <div class="file-list">
+                        {% for shared in recent_shared %}
+                            <div class="file-item">
+                                <div class="file-icon">
+                                    <i class="{{ get_file_icon(shared.file.file_type) }}"></i>
+                                </div>
+                                <div class="file-info">
+                                    <h4 class="file-name">{{ shared.file.original_filename }}</h4>
+                                    <p class="file-meta">
+                                        Shared by <strong>{{ shared.shared_by.username }}</strong> &bull;
+                                        {{ shared.shared_at.strftime('%Y-%m-%d') }}
+                                    </p>
+                                </div>
+                                {% if shared.can_download %}
+                                    <a href="{{ url_for('download_file', file_id=shared.file.id) }}" class="btn btn-sm btn-primary" title="Download">
+                                        <i class="fa-solid fa-download"></i>
+                                    </a>
+                                {% else %}
+                                    <a href="{{ url_for('file_details', file_id=shared.file.id) }}" class="btn btn-sm btn-outline" title="View">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fa-solid fa-share-nodes empty-icon"></i>
+                        <p class="empty-text">No files shared with you yet</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="dashboard-card dashboard-card-full">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fa-solid fa-timeline"></i>
+                    Recent Activity
+                </h2>
+            </div>
+            <div class="card-body">
+                {% if recent_logs %}
+                    <div class="activity-timeline">
+                        {% for log in recent_logs %}
+                            <div class="activity-item">
+                                <div class="activity-icon {{ log.action|default('info') }}">
+                                    {% if log.action == 'upload' %}
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    {% elif log.action == 'download' %}
+                                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                                    {% elif log.action == 'share' %}
+                                        <i class="fa-solid fa-share"></i>
+                                    {% elif log.action == 'delete' %}
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    {% elif log.action == 'login' %}
+                                        <i class="fa-solid fa-right-to-bracket"></i>
+                                    {% elif log.action == 'revoke' %}
+                                        <i class="fa-solid fa-ban"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-circle-info"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-description">{{ log.description }}</p>
+                                    <span class="activity-timestamp">
+                                        <i class="fa-regular fa-clock"></i>
+                                        {{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fa-solid fa-timeline empty-icon"></i>
+                        <p class="empty-text">No recent activity</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
