@@ -31,11 +31,17 @@ A secure, web-based file sharing platform built with Python (Flask) that impleme
 
 | Member | Responsibility |
 |--------|---------------|
-| Noor e Emaan Fatima | Frontend, documentation, and testing support |
-| Mahaz Hafeez | Backend development and security implementation |
-| Arooba Fatima | UI design and frontend development |
-| Umm e Momina | Database design and integration |
-| Fathima Zahra | Testing, validation, and documentation support |
+| Noor e Emaan Fatima | Frontend templates (index, login, register), test case writing and
+report compilation|
+| Mahaz Hafeez |UI/UX design, CSS styling, dashboard and file management
+templates, usability improvements|
+| Arooba Fatima |Backend Flask routes (app.py), RBAC decorator, session
+management, and activity logging|
+| Umm e Momina | Database schema design (models.py), SQLAlchemy ORM
+integration, database.py, admin panel templates, and project
+documentation|
+| Fathima Zahra |Security testing (SAST and DAST), encryption module
+(encryption.py), integrity verification, security implementation|
 
 ---
 
