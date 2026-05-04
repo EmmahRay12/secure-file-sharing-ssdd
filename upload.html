@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Files{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 750px; margin: 0 auto; padding: 2rem 1rem;">
+
+    <div class="page-header">
+        <h1 class="page-header-title">
+            <i class="fa-solid fa-cloud-arrow-up" style="color: var(--color-primary-500);"></i>
+            Upload Files
+        </h1>
+        <p class="page-header-subtitle">
+            <i class="fa-solid fa-lock"></i>
+            Your files will be saved securely with AES-256-GCM encryption
+        </p>
+    </div>
+
+    <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data" id="uploadForm">
+
+                <div class="file-upload-zone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <p class="upload-title">Drag &amp; Drop files here</p>
+                    <p class="upload-text">or <strong>click to choose a file</strong></p>
+                    <input type="file" id="fileInput" name="file" style="display:none;" accept="*/*">
+                    <p style="font-size:0.8rem;color:var(--color-text-muted);margin-top:0.75rem;">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Maximum file size: 2GB &nbsp;|&nbsp; All file types are allowed
+                    </p>
+                </div>
+
+                <div id="fileInfoArea" style="display:none;margin-top:1.25rem;">
+                    <div style="background:var(--color-surface-alt);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:1rem 1.25rem;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+                            <span style="font-weight:600;color:var(--color-text-primary);">
+                                <i class="fa-solid fa-file-circle-check" style="color:green;"></i>
+                                Selected File
+                            </span>
+                            <button type="button" id="removeFile" class="btn btn-sm btn-outline-danger">
+                                <i class="fa-solid fa-xmark"></i> Remove
+                            </button>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;">
+                            <div>
+                                <div style="font-size:0.75rem;color:var(--color-text-muted);margin-bottom:2px;">File Name</div>
+                                <div id="fileName" style="font-size:0.875rem;font-weight:500;word-break:break-all;">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size:0.75rem;color:var(--color-text-muted);margin-bottom:2px;">File Size</div>
+                                <div id="fileSize" style="font-size:0.875rem;font-weight:500;">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size:0.75rem;color:var(--color-text-muted);margin-bottom:2px;">File Type</div>
+                                <div id="fileType" style="font-size:0.875rem;font-weight:500;">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="uploadProgress" style="display:none;margin-top:1.25rem;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;">
+                        <span style="font-size:0.875rem;color:var(--color-text-secondary);">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Encrypting &amp; Uploading...
+                        </span>
+                        <span id="progressPct" style="font-size:0.875rem;font-weight:600;">0%</span>
+                    </div>
+                    <div style="background:var(--color-border);border-radius:999px;height:8px;overflow:hidden;">
+                        <div id="progressBar" style="height:100%;width:0%;background:var(--color-primary-500);border-radius:999px;transition:width 0.3s;"></div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:0.75rem;margin-top:1.5rem;flex-wrap:wrap;">
+                    <button type="submit" class="btn btn-primary btn-lg" id="uploadBtn" disabled>
+                        <i class="fa-solid fa-lock"></i>
+                        Upload &amp; Encrypt
+                    </button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to Dashboard
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-shield-halved" style="color:var(--color-primary-500);"></i>
+                Allowed File Types
+            </h3>
+            <p class="card-subtitle">All file categories listed below are supported</p>
+        </div>
+        <div class="card-body">
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;background:var(--color-primary-50);color:var(--color-primary-700);border-radius:999px;font-size:0.8rem;font-weight:500;"><i class="fa-solid fa-file-pdf"></i> PDF</span>
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;background:var(--color-primary-50);color:var(--color-primary-700);border-radius:999px;font-size:0.8rem;font-weight:500;"><i class="fa-solid fa-file-image"></i> Images</span>
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;background:var(--color-primary-50);color:var(--color-primary-700);border-radius:999px;font-size:0.8rem;font-weight:500;"><i class="fa-solid fa-file-word"></i> Documents</span>
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;background:var(--color-primary-50);color:var(--color-primary-700);border-radius:999px;font-size:0.8rem;font-weight:500;"><i class="fa-solid fa-file-excel"></i> Spreadsheets</span>
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;background:var(--color-primary-50);color:var(--color-primary-700);border-radius:999px;font-size:0.8rem;font-weight:500;"><i class="fa-solid fa-file-powerpoint"></i> Presentations</span>
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;background:var(--color-primary-50);color:var(--color-primary-700);border-radius:999px;font-size:0.8rem;font-weight:500;"><i class="fa-solid fa-file-zipper"></i> Archives</span>
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;background:var(--color-primary-50);color:var(--color-primary-700);border-radius:999px;font-size:0.8rem;font-weight:500;"><i class="fa-solid fa-file-video"></i> Videos</span>
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;background:var(--color-primary-50);color:var(--color-primary-700);border-radius:999px;font-size:0.8rem;font-weight:500;"><i class="fa-solid fa-file-audio"></i> Audio</span>
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;background:var(--color-primary-50);color:var(--color-primary-700);border-radius:999px;font-size:0.8rem;font-weight:500;"><i class="fa-solid fa-file-code"></i> Code</span>
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;background:var(--color-primary-50);color:var(--color-primary-700);border-radius:999px;font-size:0.8rem;font-weight:500;"><i class="fa-solid fa-file-lines"></i> Text</span>
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;background:var(--color-primary-50);color:var(--color-primary-700);border-radius:999px;font-size:0.8rem;font-weight:500;"><i class="fa-solid fa-database"></i> Data / Config</span>
+            </div>
+            <p style="font-size:0.8rem;color:var(--color-text-muted);margin-top:1rem;">
+                <i class="fa-solid fa-circle-info"></i>
+                Every file is encrypted with AES-256-GCM and stored securely.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var dropzone    = document.getElementById('dropzone');
+    var fileInput   = document.getElementById('fileInput');
+    var fileInfoArea= document.getElementById('fileInfoArea');
+    var fileNameEl  = document.getElementById('fileName');
+    var fileSizeEl  = document.getElementById('fileSize');
+    var fileTypeEl  = document.getElementById('fileType');
+    var uploadBtn   = document.getElementById('uploadBtn');
+    var removeBtn   = document.getElementById('removeFile');
+    var uploadForm  = document.getElementById('uploadForm');
+    var uploadProg  = document.getElementById('uploadProgress');
+    var progressBar = document.getElementById('progressBar');
+    var progressPct = document.getElementById('progressPct');
+    var MAX_SIZE    = 2 * 1024 * 1024 * 1024;
+
+    function formatSize(bytes) {
+        if (bytes === 0) return '0 B';
+        var k = 1024, sizes = ['B','KB','MB','GB'];
+        var i = Math.floor(Math.log(bytes) / Math.log(k));
+        return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+    }
+
+    function handleFile(file) {
+        if (!file) return;
+        if (file.size > MAX_SIZE) {
+            alert('File is larger than 2GB. Please choose a smaller file.');
+            resetSelection();
+            return;
+        }
+        fileNameEl.textContent = file.name;
+        fileSizeEl.textContent = formatSize(file.size);
+        var ext = file.name.split('.').pop().toUpperCase();
+        fileTypeEl.textContent = file.type || ext || 'Unknown';
+        fileInfoArea.style.display = 'block';
+        uploadBtn.disabled = false;
+        dropzone.classList.add('dragover');
+    }
+
+    function resetSelection() {
+        fileInput.value = '';
+        fileNameEl.textContent = '-';
+        fileSizeEl.textContent = '-';
+        fileTypeEl.textContent = '-';
+        fileInfoArea.style.display = 'none';
+        uploadBtn.disabled = true;
+        dropzone.classList.remove('dragover');
+    }
+
+    fileInput.addEventListener('change', function () {
+        if (this.files.length > 0) handleFile(this.files[0]);
+    });
+
+    removeBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        resetSelection();
+    });
+
+    ['dragenter','dragover','dragleave','drop'].forEach(function(ev) {
+        dropzone.addEventListener(ev, function(e) { e.preventDefault(); e.stopPropagation(); });
+        document.body.addEventListener(ev, function(e) { e.preventDefault(); e.stopPropagation(); });
+    });
+    ['dragenter','dragover'].forEach(function(ev) {
+        dropzone.addEventListener(ev, function() { dropzone.classList.add('dragover'); });
+    });
+    ['dragleave','drop'].forEach(function(ev) {
+        dropzone.addEventListener(ev, function() { dropzone.classList.remove('dragover'); });
+    });
+    dropzone.addEventListener('drop', function (e) {
+        var files = e.dataTransfer.files;
+        if (files.length > 0) { fileInput.files = files; handleFile(files[0]); }
+    });
+
+    uploadForm.addEventListener('submit', function () {
+        if (!fileInput.files.length) return;
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Encrypting...';
+        uploadProg.style.display = 'block';
+        var pct = 0;
+        var iv = setInterval(function() {
+            pct += Math.random() * 12;
+            if (pct >= 90) { pct = 90; clearInterval(iv); }
+            progressBar.style.width = Math.floor(pct) + '%';
+            progressPct.textContent = Math.floor(pct) + '%';
+        }, 200);
+    });
+});
+</script>
+{% endblock %}
