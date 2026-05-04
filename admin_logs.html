@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Activity Logs - Admin{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">
+                <i class="fa-solid fa-clipboard-list"></i>
+                Activity Logs
+            </h1>
+            <p class="page-subtitle">Monitor all system activity and security events</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    {% if logs.items %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-list"></i>
+                All Activity Logs
+            </h3>
+            <span class="badge badge-info">Page {{ logs.page }} of {{ logs.pages }}</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Description</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs.items %}
+                    <tr>
+                        <td>{{ log.id }}</td>
+                        <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>
+                            {% if log.user %}
+                                <span class="badge badge-primary">{{ log.user.username }}</span>
+                            {% else %}
+                                <span class="badge badge-secondary">System</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge
+                                {% if log.action == 'login' %}badge-success
+                                {% elif log.action == 'logout' %}badge-secondary
+                                {% elif log.action == 'upload' %}badge-info
+                                {% elif log.action == 'download' %}badge-primary
+                                {% elif log.action == 'share' %}badge-info
+                                {% elif log.action == 'delete' %}badge-danger
+                                {% elif log.action == 'admin_action' %}badge-warning
+                                {% elif log.action == 'revoke' %}badge-danger
+                                {% elif log.action == 'register' %}badge-success
+                                {% elif log.action == 'password_change' %}badge-warning
+                                {% else %}badge-secondary{% endif %}">
+                                {{ log.ACTION_TYPES.get(log.action, log.action) }}
+                            </span>
+                        </td>
+                        <td>{{ log.description or '—' }}</td>
+                        <td><code>{{ log.ip_address or '—' }}</code></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if logs.pages > 1 %}
+        <div class="card-footer">
+            <div class="pagination">
+                {% if logs.has_prev %}
+                <a href="{{ url_for('admin_logs', page=logs.page - 1) }}" class="btn btn-sm btn-outline">
+                    <i class="fa-solid fa-chevron-left"></i> Previous
+                </a>
+                {% endif %}
+
+                <span class="pagination-info">
+                    Page {{ logs.page }} of {{ logs.pages }}
+                </span>
+
+                {% if logs.has_next %}
+                <a href="{{ url_for('admin_logs', page=logs.page + 1) }}" class="btn btn-sm btn-outline">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fa-solid fa-clipboard-list"></i>
+        <h3>No activity logs yet</h3>
+        <p>Activity logs will appear here as users interact with the system.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

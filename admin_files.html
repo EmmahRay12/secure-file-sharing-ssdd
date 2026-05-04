@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}File Management - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-6">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {% if category == 'success' %}alert-success{% elif category == 'error' %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show mb-4" role="alert">
+                    <i class="fa-solid {% if category == 'success' %}fa-circle-check{% elif category == 'error' %}fa-circle-xmark{% else %}fa-circle-info{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Page Header -->
+    <div class="d-flex align-items-center justify-content-between mb-6">
+        <div class="d-flex align-items-center">
+            <div class="me-3">
+                <div class="bg-primary bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 20px;"></i>
+                </div>
+            </div>
+            <div>
+                <h1 class="h3 mb-0 text-white fw-bold">File Management</h1>
+                <p class="text-secondary mb-0 small">{{ files|length }} file{{ 's' if files|length != 1 else '' }} in system &middot; Total: {{ format_file_size(total_size|default(0)) }}</p>
+            </div>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary border-secondary rounded-2 px-4 py-2">
+            <i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Files Table -->
+    <div class="card bg-dark-card border border-secondary rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0 align-middle">
+                    <thead>
+                        <tr class="border-bottom border-secondary">
+                            <th class="text-secondary small text-uppercase fw-semibold ps-4" style="width: 4%;">ID</th>
+                            <th class="text-secondary small text-uppercase fw-semibold" style="width: 25%;">Filename</th>
+                            <th class="text-secondary small text-uppercase fw-semibold" style="width: 13%;">Owner</th>
+                            <th class="text-secondary small text-uppercase fw-semibold text-center" style="width: 8%;">Size</th>
+                            <th class="text-secondary small text-uppercase fw-semibold text-center" style="width: 10%;">Type</th>
+                            <th class="text-secondary small text-uppercase fw-semibold" style="width: 13%;">Uploaded</th>
+                            <th class="text-secondary small text-uppercase fw-semibold" style="width: 15%;">Hash (SHA-256)</th>
+                            <th class="text-secondary small text-uppercase fw-semibold text-center pe-4" style="width: 12%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if files %}
+                            {% for file in files %}
+                            <tr class="border-bottom border-secondary border-opacity-25">
+                                <!-- ID -->
+                                <td class="ps-4">
+                                    <code class="text-secondary">#{{ file.id }}</code>
+                                </td>
+                                <!-- Filename -->
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-secondary bg-opacity-25 rounded d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 34px; height: 34px;">
+                                            <i class="fa-solid {{ get_file_icon(file.file_type) }} text-secondary" style="font-size: 14px;"></i>
+                                        </div>
+                                        <span class="text-white small fw-semibold text-truncate" style="max-width: 250px; display: inline-block;" title="{{ file.original_filename }}">
+                                            {{ file.original_filename }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <!-- Owner -->
+                                <td>
+                                    <span class="text-secondary small">
+                                        <i class="fa-solid fa-user text-muted me-1"></i>{{ file.owner.username }}
+                                    </span>
+                                </td>
+                                <!-- Size -->
+                                <td class="text-center">
+                                    <span class="text-info small fw-semibold">{{ format_file_size(file.file_size) }}</span>
+                                </td>
+                                <!-- Type -->
+                                <td class="text-center">
+                                    <code class="bg-secondary bg-opacity-25 text-secondary px-2 py-1 rounded" style="font-size: 11px;">{{ file.file_type|upper }}</code>
+                                </td>
+                                <!-- Uploaded -->
+                                <td>
+                                    <span class="text-secondary small">
+                                        {{ file.uploaded_at.strftime('%b %d, %Y') if file.uploaded_at else 'N/A' }}
+                                    </span>
+                                </td>
+                                <!-- Hash (truncated) -->
+                                <td>
+                                    {% if file.file_hash %}
+                                        <code class="text-muted" style="font-size: 10px;" title="{{ file.file_hash }}">
+                                            {{ file.file_hash[:16] }}...{{ file.file_hash[-8:] }}
+                                        </code>
+                                    {% else %}
+                                        <span class="text-muted small">—</span>
+                                    {% endif %}
+                                </td>
+                                <!-- Actions -->
+                                <td class="text-center pe-4">
+                                    <div class="d-flex align-items-center justify-content-center gap-1">
+                                        <!-- Download Button -->
+                                        <a href="{{ url_for('admin_download_file', file_id=file.id) }}" class="btn btn-sm btn-outline-primary border-primary rounded px-2 py-1" title="Download file">
+                                            <i class="fa-solid fa-cloud-arrow-down"></i>
+                                        </a>
+                                        <!-- File Details -->
+                                        <a href="{{ url_for('file_details', file_id=file.id) }}" class="btn btn-sm btn-outline-secondary border-secondary rounded px-2 py-1" title="View details">
+                                            <i class="fa-solid fa-circle-info"></i>
+                                        </a>
+                                        <!-- Delete Button -->
+                                        <form method="POST" action="{{ url_for('admin_delete_file', file_id=file.id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete {{ file.original_filename }}? This action cannot be undone.')">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger border-danger rounded px-2 py-1" title="Delete file">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center text-secondary py-8">
+                                    <i class="fa-solid fa-folder-open d-block mb-3" style="font-size: 40px;"></i>
+                                    <h5 class="text-white-50 fw-semibold">No files found</h5>
+                                    <p class="text-secondary small">No files have been uploaded to the system yet.</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="mt-4 text-secondary small">
+        <i class="fa-solid fa-shield-halved me-1"></i>
+        All files are encrypted at rest. SHA-256 hashes are computed on upload for integrity verification.
+    </div>
+</div>
+{% endblock %}

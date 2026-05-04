@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-6">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {% if category == 'success' %}alert-success{% elif category == 'error' %}alert-danger{% else %}alert-info{% endif %} alert-dismissible fade show mb-4" role="alert">
+                    <i class="fa-solid {% if category == 'success' %}fa-circle-check{% elif category == 'error' %}fa-circle-xmark{% else %}fa-circle-info{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Page Header -->
+    <div class="d-flex align-items-center justify-content-between mb-6">
+        <div class="d-flex align-items-center">
+            <div class="me-3">
+                <div class="bg-primary bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                    <i class="fa-solid fa-gauge-high text-primary" style="font-size: 20px;"></i>
+                </div>
+            </div>
+            <div>
+                <h1 class="h3 mb-0 text-white fw-bold">Admin Dashboard</h1>
+                <p class="text-secondary mb-0 small">System overview and administration controls</p>
+            </div>
+        </div>
+        <div class="text-secondary small">
+            <i class="fa-regular fa-clock me-1"></i>
+            {{ now.strftime('%B %d, %Y %H:%M') if now else 'N/A' }}
+        </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-4 mb-6">
+        <!-- Total Users -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-dark-card border border-secondary rounded-3 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-secondary small text-uppercase fw-semibold mb-1">Total Users</p>
+                            <h2 class="text-white fw-bold mb-0">{{ total_users|default(0) }}</h2>
+                        </div>
+                        <div class="bg-info bg-opacity-15 rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                            <i class="fa-solid fa-users text-info" style="font-size: 22px;"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-top border-secondary">
+                        <small class="text-secondary">
+                            <i class="fa-solid fa-user-plus text-success me-1"></i>
+                            {{ total_users|default(0) }} active accounts
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Files -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-dark-card border border-secondary rounded-3 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-secondary small text-uppercase fw-semibold mb-1">Total Files</p>
+                            <h2 class="text-white fw-bold mb-0">{{ total_files|default(0) }}</h2>
+                        </div>
+                        <div class="bg-warning bg-opacity-15 rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                            <i class="fa-solid fa-file-lines text-warning" style="font-size: 22px;"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-top border-secondary">
+                        <small class="text-secondary">
+                            <i class="fa-solid fa-cloud-arrow-up text-info me-1"></i>
+                            Securely stored
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Shares -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-dark-card border border-secondary rounded-3 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-secondary small text-uppercase fw-semibold mb-1">Total Shares</p>
+                            <h2 class="text-white fw-bold mb-0">{{ total_shares|default(0) }}</h2>
+                        </div>
+                        <div class="bg-success bg-opacity-15 rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                            <i class="fa-solid fa-share-nodes text-success" style="font-size: 22px;"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-top border-secondary">
+                        <small class="text-secondary">
+                            <i class="fa-solid fa-link text-warning me-1"></i>
+                            Active file shares
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Storage -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-dark-card border border-secondary rounded-3 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-secondary small text-uppercase fw-semibold mb-1">Total Storage</p>
+                            <h2 class="text-white fw-bold mb-0">{{ format_file_size(total_size|default(0)) }}</h2>
+                        </div>
+                        <div class="bg-primary bg-opacity-15 rounded-circle d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+                            <i class="fa-solid fa-hard-drive text-primary" style="font-size: 22px;"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-top border-secondary">
+                        <small class="text-secondary">
+                            <i class="fa-solid fa-database text-danger me-1"></i>
+                            Disk usage
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Action Buttons -->
+    <div class="d-flex flex-wrap gap-3 mb-6">
+        <a href="{{ url_for('admin_users') }}" class="btn btn-outline-primary border-secondary rounded-2 px-4 py-2">
+            <i class="fa-solid fa-users-gear me-2"></i>Manage Users
+        </a>
+        <a href="{{ url_for('admin_files') }}" class="btn btn-outline-warning border-secondary rounded-2 px-4 py-2">
+            <i class="fa-solid fa-folder-open me-2"></i>Manage Files
+        </a>
+        <a href="{{ url_for('admin_logs') }}" class="btn btn-outline-info border-secondary rounded-2 px-4 py-2">
+            <i class="fa-solid fa-scroll me-2"></i>View Logs
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Users Table -->
+        <div class="col-lg-5">
+            <div class="card bg-dark-card border border-secondary rounded-3 h-100">
+                <div class="card-header bg-transparent border-bottom border-secondary py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0 text-white">
+                            <i class="fa-solid fa-user-clock text-info me-2"></i>Recent Users
+                        </h5>
+                        <a href="{{ url_for('admin_users') }}" class="text-primary small text-decoration-none">
+                            View All <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0 align-middle">
+                            <thead>
+                                <tr class="border-bottom border-secondary">
+                                    <th class="text-secondary small text-uppercase fw-semibold ps-4">User</th>
+                                    <th class="text-secondary small text-uppercase fw-semibold">Role</th>
+                                    <th class="text-secondary small text-uppercase fw-semibold">Joined</th>
+                                    <th class="text-secondary small text-uppercase fw-semibold pe-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if recent_users %}
+                                    {% for user in recent_users[:5] %}
+                                    <tr class="border-bottom border-secondary border-opacity-25">
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-secondary bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                    <i class="fa-solid fa-user text-secondary" style="font-size: 12px;"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-white small fw-semibold">{{ user.username }}</div>
+                                                    <div class="text-secondary" style="font-size: 11px;">{{ user.email }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge {% if user.role == 'admin' %}bg-danger{% else %}bg-info{% endif %} bg-opacity-25 text-{{ 'danger' if user.role == 'admin' else 'info' }} rounded-pill px-2 py-1" style="font-size: 11px;">
+                                                {{ user.role|capitalize }}
+                                            </span>
+                                        </td>
+                                        <td class="text-secondary small">
+                                            {{ user.created_at.strftime('%b %d') if user.created_at else 'N/A' }}
+                                        </td>
+                                        <td class="pe-4">
+                                            <span class="badge bg-{{ 'success' if user.is_active else 'secondary' }} bg-opacity-25 text-{{ 'success' if user.is_active else 'muted' }} rounded-pill px-2 py-1" style="font-size: 11px;">
+                                                <i class="fa-solid fa-circle me-1" style="font-size: 5px; vertical-align: middle;"></i>
+                                                {{ 'Active' if user.is_active else 'Inactive' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-secondary py-5">
+                                            <i class="fa-solid fa-users-slash d-block mb-2" style="font-size: 24px;"></i>
+                                            No users found
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Logs Table -->
+        <div class="col-lg-7">
+            <div class="card bg-dark-card border border-secondary rounded-3 h-100">
+                <div class="card-header bg-transparent border-bottom border-secondary py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="mb-0 text-white">
+                            <i class="fa-solid fa-list-check text-success me-2"></i>Recent Activity
+                        </h5>
+                        <a href="{{ url_for('admin_logs') }}" class="text-primary small text-decoration-none">
+                            View All <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 420px; overflow-y: auto;">
+                        <table class="table table-dark table-hover mb-0 align-middle">
+                            <thead class="sticky-top" style="background-color: #1a1d23;">
+                                <tr class="border-bottom border-secondary">
+                                    <th class="text-secondary small text-uppercase fw-semibold ps-4">User</th>
+                                    <th class="text-secondary small text-uppercase fw-semibold">Action</th>
+                                    <th class="text-secondary small text-uppercase fw-semibold">Description</th>
+                                    <th class="text-secondary small text-uppercase fw-semibold">IP</th>
+                                    <th class="text-secondary small text-uppercase fw-semibold pe-4">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if recent_logs %}
+                                    {% for log in recent_logs[:10] %}
+                                    <tr class="border-bottom border-secondary border-opacity-25">
+                                        <td class="ps-4">
+                                            <span class="text-white small fw-semibold">{{ log.user.username if log.user else 'System' }}</span>
+                                        </td>
+                                        <td>
+                                            {% set action_icons = {
+                                                'login': 'fa-right-to-bracket text-success',
+                                                'logout': 'fa-right-from-bracket text-secondary',
+                                                'upload': 'fa-cloud-arrow-up text-info',
+                                                'download': 'fa-cloud-arrow-down text-warning',
+                                                'delete': 'fa-trash text-danger',
+                                                'share': 'fa-share-nodes text-primary',
+                                                'register': 'fa-user-plus text-success',
+                                                'admin': 'fa-shield-halved text-danger'
+                                            } %}
+                                            {% set icon_class = action_icons.get(log.action, 'fa-circle-dot text-secondary') %}
+                                            <span class="text-{{ icon_class.split(' ')[1] }} small">
+                                                <i class="fa-solid {{ icon_class.split(' ')[0] }} me-1"></i>{{ log.action|capitalize }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-secondary small" style="max-width: 200px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ log.description|default('') }}">
+                                                {{ log.description|default('—') }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <code class="text-secondary" style="font-size: 11px;">{{ log.ip_address|default('—') }}</code>
+                                        </td>
+                                        <td class="pe-4">
+                                            <span class="text-secondary" style="font-size: 11px;">
+                                                {{ log.timestamp.strftime('%H:%M %b %d') if log.timestamp else '—' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-secondary py-5">
+                                            <i class="fa-solid fa-clipboard-list d-block mb-2" style="font-size: 24px;"></i>
+                                            No activity logs found
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom scrollbar for activity table */
+    .table-responsive::-webkit-scrollbar {
+        width: 6px;
+    }
+    .table-responsive::-webkit-scrollbar-track {
+        background: #1a1d23;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #495057;
+        border-radius: 3px;
+    }
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #6c757d;
+    }
+</style>
+{% endblock %}
