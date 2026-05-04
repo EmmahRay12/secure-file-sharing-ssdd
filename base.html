@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SecureShare{% endblock %} | SecureShare</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Application Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="{{ url_for('index') }}" class="navbar-brand">
+                <i class="fa-solid fa-shield-halved brand-icon"></i>
+                <span class="brand-text">SecureShare</span>
+            </a>
+
+            <button class="navbar-toggle" id="navbarToggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span class="toggle-bar"></span>
+                <span class="toggle-bar"></span>
+                <span class="toggle-bar"></span>
+            </button>
+
+            <div class="navbar-menu" id="navbarMenu">
+                {% if current_user and current_user.is_authenticated %}
+                <ul class="navbar-nav">
+                    <li class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                        <a href="{{ url_for('dashboard') }}" class="nav-link">
+                            <i class="fa-solid fa-gauge-high"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if request.endpoint == 'upload_file' %}active{% endif %}">
+                        <a href="{{ url_for('upload_file') }}" class="nav-link">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span>Upload</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if request.endpoint == 'my_files' %}active{% endif %}">
+                        <a href="{{ url_for('my_files') }}" class="nav-link">
+                            <i class="fa-solid fa-folder-open"></i>
+                            <span>My Files</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if request.endpoint == 'shared_files' %}active{% endif %}">
+                        <a href="{{ url_for('shared_files') }}" class="nav-link">
+                            <i class="fa-solid fa-share-nodes"></i>
+                            <span>Shared With Me</span>
+                        </a>
+                    </li>
+                </ul>
+
+                {% if current_user.role == 'admin' %}
+                <div class="navbar-divider"></div>
+                <ul class="navbar-nav admin-nav">
+                    <li class="nav-item {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                        <a href="{{ url_for('admin_dashboard') }}" class="nav-link">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                            <span>Admin Panel</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if request.endpoint == 'admin_users' %}active{% endif %}">
+                        <a href="{{ url_for('admin_users') }}" class="nav-link">
+                            <i class="fa-solid fa-users-gear"></i>
+                            <span>Manage Users</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if request.endpoint == 'admin_files' %}active{% endif %}">
+                        <a href="{{ url_for('admin_files') }}" class="nav-link">
+                            <i class="fa-solid fa-hard-drive"></i>
+                            <span>Manage Files</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if request.endpoint == 'admin_logs' %}active{% endif %}">
+                        <a href="{{ url_for('admin_logs') }}" class="nav-link">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                            <span>View Logs</span>
+                        </a>
+                    </li>
+                </ul>
+                {% endif %}
+
+                <div class="navbar-divider"></div>
+                <div class="navbar-profile">
+                    <button class="profile-toggle" id="profileToggle" aria-label="Profile menu" aria-expanded="false">
+                        <div class="profile-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <span class="profile-name">{{ current_user.username }}</span>
+                        {% if current_user.role == 'admin' %}
+                        <span class="badge badge-role badge-admin">Admin</span>
+                        {% endif %}
+                        <i class="fa-solid fa-chevron-down profile-chevron"></i>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-info">
+                                <strong>{{ current_user.username }}</strong>
+                                <small>{{ current_user.email }}</small>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ url_for('profile') }}" class="dropdown-item">
+                            <i class="fa-solid fa-user-pen"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="{{ url_for('logout') }}" class="dropdown-item dropdown-item-danger">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="{{ url_for('login') }}" class="nav-link">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            <span>Sign In</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('register') }}" class="nav-link">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>Get Started</span>
+                        </a>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- FLASH MESSAGES -->
+    <div class="flash-container" id="flashContainer">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }} animate-fade-in" role="alert">
+                    <div class="flash-icon">
+                        {% if category == 'success' %}
+                            <i class="fa-solid fa-circle-check"></i>
+                        {% elif category == 'danger' or category == 'error' %}
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        {% elif category == 'warning' %}
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        {% elif category == 'info' %}
+                            <i class="fa-solid fa-circle-info"></i>
+                        {% else %}
+                            <i class="fa-solid fa-bell"></i>
+                        {% endif %}
+                    </div>
+                    <div class="flash-content">{{ message }}</div>
+                    <button class="flash-close" onclick="this.parentElement.remove();" aria-label="Dismiss">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>SecureShare</span>
+                </div>
+                <p class="footer-text">&copy; 2026 SecureShare. Secure file sharing made simple.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Mobile Navigation Toggle
+        const navbarToggle = document.getElementById('navbarToggle');
+        const navbarMenu = document.getElementById('navbarMenu');
+
+        if (navbarToggle && navbarMenu) {
+            navbarToggle.addEventListener('click', () => {
+                const isOpen = navbarMenu.classList.toggle('open');
+                navbarToggle.classList.toggle('active');
+                navbarToggle.setAttribute('aria-expanded', isOpen);
+            });
+
+            navbarMenu.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    navbarMenu.classList.remove('open');
+                    navbarToggle.classList.remove('active');
+                    navbarToggle.setAttribute('aria-expanded', 'false');
+                });
+            });
+        }
+
+        // Profile Dropdown Toggle
+        const profileToggle = document.getElementById('profileToggle');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        if (profileToggle && profileDropdown) {
+            profileToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = profileDropdown.classList.toggle('open');
+                profileToggle.setAttribute('aria-expanded', isOpen);
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('open');
+                    profileToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
+        // Auto-dismiss flash messages after 6 seconds
+        document.querySelectorAll('.flash-message').forEach(msg => {
+            setTimeout(() => {
+                msg.classList.add('flash-exit');
+                setTimeout(() => msg.remove(), 300);
+            }, 6000);
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (navbar) {
+                if (window.scrollY > 10) {
+                    navbar.classList.add('navbar-scrolled');
+                } else {
+                    navbar.classList.remove('navbar-scrolled');
+                }
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

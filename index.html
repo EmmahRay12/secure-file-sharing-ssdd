@@ -1,0 +1,966 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ================================================
+       LANDING PAGE - Dark Navy / Security Theme
+       ================================================ */
+
+    /* Hide default navbar & footer on landing */
+    .navbar,
+    .footer {
+        display: none !important;
+    }
+
+    .main-content {
+        margin-top: 0;
+        padding: 0;
+        max-width: 100%;
+    }
+
+    /* Landing Nav */
+    .landing-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 72px;
+        background: rgba(2, 6, 23, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        max-width: 100%;
+    }
+
+    .landing-nav-inner {
+        max-width: 1280px;
+        width: 100%;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .landing-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+    }
+
+    .landing-brand i {
+        font-size: 1.6rem;
+        color: #60a5fa;
+        filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+    }
+
+    .landing-brand span {
+        font-size: 1.25rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .landing-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .btn-nav-ghost {
+        padding: 0.5rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        background: transparent;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s ease;
+    }
+
+    .btn-nav-ghost:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-nav-primary {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #ffffff;
+        background: #2563eb;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s ease;
+        box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-nav-primary:hover {
+        background: #1d4ed8;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        color: #ffffff;
+    }
+
+    /* Hero Section */
+    .hero {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        overflow: hidden;
+        background: linear-gradient(165deg, #020617 0%, #0f172a 40%, #1e293b 100%);
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(ellipse 600px 400px at 30% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 70%),
+            radial-gradient(ellipse 500px 350px at 70% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .hero-grid-bg {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 60px 60px;
+        pointer-events: none;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 800px;
+        padding: 7rem 2rem 5rem;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 1rem;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        border-radius: 9999px;
+        color: #93c5fd;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        letter-spacing: 0.02em;
+    }
+
+    .hero-badge i {
+        font-size: 0.7rem;
+    }
+
+    .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: #ffffff;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.025em;
+    }
+
+    .hero h1 .highlight {
+        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-sub {
+        font-size: 1.15rem;
+        color: #94a3b8;
+        line-height: 1.7;
+        max-width: 600px;
+        margin: 0 auto 2.5rem;
+    }
+
+    .hero-cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border: none;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-hero-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(37, 99, 235, 0.5);
+        color: #ffffff;
+    }
+
+    .btn-hero-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #e2e8f0;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 0.75rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-hero-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+    }
+
+    .hero-stats {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3rem;
+        margin-top: 4rem;
+        padding-top: 2.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .hero-stat {
+        text-align: center;
+    }
+
+    .hero-stat-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 0.25rem;
+    }
+
+    .hero-stat-label {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    /* Features Section */
+    .features-section {
+        padding: 6rem 2rem;
+        background: #f8fafc;
+    }
+
+    .features-section-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .section-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.875rem;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 9999px;
+        color: #2563eb;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 1rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 1rem;
+    }
+
+    .section-header p {
+        font-size: 1.05rem;
+        color: #64748b;
+        max-width: 550px;
+        margin: 0 auto;
+        line-height: 1.7;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+
+    .feature-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 2rem;
+        transition: all 0.25s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1);
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+
+    .feature-card:hover {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        transform: translateY(-4px);
+        border-color: #bfdbfe;
+    }
+
+    .feature-card:hover::before {
+        opacity: 1;
+    }
+
+    .feature-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .feature-icon-blue {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .feature-icon-purple {
+        background: #f3e8ff;
+        color: #7c3aed;
+    }
+
+    .feature-icon-green {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .feature-icon-amber {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .feature-card h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.625rem;
+    }
+
+    .feature-card p {
+        font-size: 0.875rem;
+        color: #64748b;
+        line-height: 1.65;
+    }
+
+    /* How It Works Section */
+    .how-section {
+        padding: 6rem 2rem;
+        background: #0f172a;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .how-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+        background-size: 48px 48px;
+        pointer-events: none;
+    }
+
+    .how-section-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+    }
+
+    .how-section .section-header h2 {
+        color: #ffffff;
+    }
+
+    .how-section .section-header p {
+        color: #94a3b8;
+    }
+
+    .how-section .section-label {
+        background: rgba(59, 130, 246, 0.1);
+        border-color: rgba(59, 130, 246, 0.25);
+        color: #93c5fd;
+    }
+
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        position: relative;
+    }
+
+    .step-connector {
+        display: none;
+    }
+
+    .step-card {
+        text-align: center;
+        padding: 2.5rem 2rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 1.25rem;
+        transition: all 0.25s ease;
+        position: relative;
+    }
+
+    .step-card:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-4px);
+    }
+
+    .step-number {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #4f46e5);
+        color: #ffffff;
+        font-size: 1.125rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+    }
+
+    .step-icon {
+        font-size: 2.25rem;
+        color: #60a5fa;
+        margin-bottom: 1.25rem;
+    }
+
+    .step-card h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+    }
+
+    .step-card p {
+        font-size: 0.9rem;
+        color: #94a3b8;
+        line-height: 1.65;
+    }
+
+    /* Security Badges Section */
+    .security-section {
+        padding: 5rem 2rem;
+        background: #f8fafc;
+    }
+
+    .security-section-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .security-badges {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-top: 2.5rem;
+    }
+
+    .security-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.875rem 1.5rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+    .security-badge:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        transform: translateY(-2px);
+        border-color: #bfdbfe;
+    }
+
+    .security-badge i {
+        font-size: 1.25rem;
+        color: #2563eb;
+    }
+
+    .security-badge-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.125rem;
+    }
+
+    .security-badge-text strong {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .security-badge-text span {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+
+    /* Landing Footer */
+    .landing-footer {
+        background: #020617;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 3rem 2rem;
+    }
+
+    .landing-footer-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .landing-footer-brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .landing-footer-brand i {
+        color: #3b82f6;
+        font-size: 1.25rem;
+    }
+
+    .landing-footer-brand span {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #e2e8f0;
+    }
+
+    .landing-footer-copy {
+        font-size: 0.85rem;
+        color: #475569;
+        margin-bottom: 1.5rem;
+    }
+
+    .landing-footer-team {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .landing-footer-team strong {
+        color: #94a3b8;
+        font-weight: 600;
+    }
+
+    .team-names {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.375rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+    }
+
+    .team-names span {
+        color: #94a3b8;
+        font-size: 0.8rem;
+    }
+
+    .team-names span + span::before {
+        content: '\2022';
+        margin-right: 0.375rem;
+        color: #475569;
+    }
+
+    /* ================================================
+       RESPONSIVE
+       ================================================ */
+    @media (max-width: 1024px) {
+        .features-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .hero h1 {
+            font-size: 2.75rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .features-grid {
+            grid-template-columns: 1fr;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        .steps-grid {
+            grid-template-columns: 1fr;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 2.25rem;
+        }
+
+        .hero-sub {
+            font-size: 1rem;
+        }
+
+        .hero-stats {
+            gap: 1.5rem;
+        }
+
+        .hero-stat-value {
+            font-size: 1.35rem;
+        }
+
+        .security-badges {
+            flex-direction: column;
+            align-items: stretch;
+            max-width: 320px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero h1 {
+            font-size: 1.875rem;
+        }
+
+        .hero-cta {
+            flex-direction: column;
+        }
+
+        .btn-hero-primary,
+        .btn-hero-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .hero-stats {
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .landing-nav-inner {
+            padding: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ============================================ -->
+<!-- LANDING NAVIGATION                           -->
+<!-- ============================================ -->
+<nav class="landing-nav">
+    <div class="landing-nav-inner">
+        <a href="{{ url_for('login') }}" class="landing-brand">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>SecureShare</span>
+        </a>
+        <div class="landing-nav-actions">
+            <a href="{{ url_for('login') }}" class="btn-nav-ghost">Sign In</a>
+            <a href="{{ url_for('register') }}" class="btn-nav-primary">Get Started</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ============================================ -->
+<!-- HERO SECTION                                 -->
+<!-- ============================================ -->
+<section class="hero">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="fa-solid fa-lock"></i>
+            Enterprise-Grade Security
+        </div>
+
+        <h1>Secure File Sharing<br>Made <span class="highlight">Simple</span></h1>
+
+        <p class="hero-sub">
+            Share your files with confidence using AES-256 encryption,
+            role-based access control, and integrity verification. Your data, your control.
+        </p>
+
+        <div class="hero-cta">
+            <a href="{{ url_for('register') }}" class="btn-hero-primary">
+                <i class="fa-solid fa-rocket"></i>
+                Get Started
+            </a>
+            <a href="{{ url_for('login') }}" class="btn-hero-secondary">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                Sign In
+            </a>
+        </div>
+
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-value">AES-256</div>
+                <div class="hero-stat-label">Encryption</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">RBAC</div>
+                <div class="hero-stat-label">Access Control</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">SHA-256</div>
+                <div class="hero-stat-label">Integrity Check</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- FEATURES SECTION                             -->
+<!-- ============================================ -->
+<section class="features-section">
+    <div class="features-section-inner">
+        <div class="section-header">
+            <div class="section-label">
+                <i class="fa-solid fa-star"></i>
+                Core Features
+            </div>
+            <h2>Everything You Need for<br>Secure File Sharing</h2>
+            <p>Built with security-first architecture to protect your sensitive data at every step.</p>
+        </div>
+
+        <div class="features-grid">
+            <!-- Feature 1: AES-256 Encryption -->
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-blue">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3>AES-256 Encryption</h3>
+                <p>Every file is encrypted with military-grade AES-256 encryption before storage, ensuring your data stays private and unreadable to unauthorized parties.</p>
+            </div>
+
+            <!-- Feature 2: Role-Based Access Control -->
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-purple">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+                <h3>Role-Based Access Control</h3>
+                <p>Define granular permissions with admin and user roles. Control who can upload, view, download, and share files across your organization.</p>
+            </div>
+
+            <!-- Feature 3: Secure Sharing -->
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-green">
+                    <i class="fa-solid fa-share-nodes"></i>
+                </div>
+                <h3>Secure Sharing</h3>
+                <p>Share files with granular permissions &mdash; set read-only or full access. Revoke access at any time and track every share action.</p>
+            </div>
+
+            <!-- Feature 4: Integrity Verification -->
+            <div class="feature-card">
+                <div class="feature-icon feature-icon-amber">
+                    <i class="fa-solid fa-fingerprint"></i>
+                </div>
+                <h3>Integrity Verification</h3>
+                <p>SHA-256 hash verification ensures file integrity during upload and download. Detect any unauthorized modifications instantly.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- HOW IT WORKS SECTION                         -->
+<!-- ============================================ -->
+<section class="how-section">
+    <div class="how-section-inner">
+        <div class="section-header">
+            <div class="section-label">
+                <i class="fa-solid fa-route"></i>
+                How It Works
+            </div>
+            <h2>Get Started in 3 Easy Steps</h2>
+            <p>From registration to secure sharing, it only takes a few minutes.</p>
+        </div>
+
+        <div class="steps-grid">
+            <!-- Step 1: Register -->
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <h3>Create Your Account</h3>
+                <p>Sign up with a username, email, and a secure password. Your account is instantly activated and ready to use.</p>
+            </div>
+
+            <!-- Step 2: Upload & Encrypt -->
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-icon">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h3>Upload &amp; Encrypt</h3>
+                <p>Drag and drop your files to upload. They are automatically encrypted with AES-256 before being stored on our secure servers.</p>
+            </div>
+
+            <!-- Step 3: Share Securely -->
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-icon">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </div>
+                <h3>Share Securely</h3>
+                <p>Share files with other users using granular permission controls. Set access levels and revoke sharing at any time.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- SECURITY BADGES SECTION                      -->
+<!-- ============================================ -->
+<section class="security-section">
+    <div class="security-section-inner">
+        <div class="section-header">
+            <div class="section-label">
+                <i class="fa-solid fa-shield-halved"></i>
+                Security Standards
+            </div>
+            <h2>Enterprise-Grade Security</h2>
+            <p>Our platform is built on industry-standard security protocols to keep your files safe.</p>
+        </div>
+
+        <div class="security-badges">
+            <div class="security-badge">
+                <i class="fa-solid fa-lock"></i>
+                <div class="security-badge-text">
+                    <strong>AES-256</strong>
+                    <span>Encryption Standard</span>
+                </div>
+            </div>
+
+            <div class="security-badge">
+                <i class="fa-solid fa-users-gear"></i>
+                <div class="security-badge-text">
+                    <strong>RBAC</strong>
+                    <span>Role-Based Access</span>
+                </div>
+            </div>
+
+            <div class="security-badge">
+                <i class="fa-solid fa-fingerprint"></i>
+                <div class="security-badge-text">
+                    <strong>SHA-256</strong>
+                    <span>Hash Verification</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- LANDING FOOTER                               -->
+<!-- ============================================ -->
+<footer class="landing-footer">
+    <div class="landing-footer-inner">
+        <div class="landing-footer-brand">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>SecureShare</span>
+        </div>
+        <p class="landing-footer-copy">&copy; 2025 SecureShare. All rights reserved. Secure file sharing made simple.</p>
+        <div class="landing-footer-team">
+            <strong>Built by:</strong>
+            <div class="team-names">
+                <span>Noor e Emaan Fatima</span>
+                <span>Mahaz Hafeez</span>
+                <span>Arooba Fatima</span>
+                <span>Umm e Momina</span>
+                <span>Fathima Zahra</span>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Smooth scroll behavior already handled by CSS
+    // Navbar scroll effect for landing nav
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('.landing-nav');
+        if (nav) {
+            if (window.scrollY > 10) {
+                nav.style.background = 'rgba(2, 6, 23, 0.95)';
+                nav.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.3)';
+            } else {
+                nav.style.background = 'rgba(2, 6, 23, 0.85)';
+                nav.style.boxShadow = 'none';
+            }
+        }
+    });
+</script>
+{% endblock %}
